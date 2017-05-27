@@ -6,6 +6,9 @@ import json
 from BeautifulSoup import BeautifulSoup
 import urllib
 
+
+
+
 clustersGeographic = ["Africa", "Americas", "Asia","Europe", "Oceania"]
 #clustersChromosomal =
 
@@ -19,7 +22,10 @@ ncbiUrl = "ftp://ftp.ncbi.nih.gov/genomes/Homo_sapiens/"
 firstName = raw_input("What is the first name that you want to search for ? >> ")
 firstName = "patrick"
 
-duckUrl = "http://api.duckduckgo.com/?format=json&q="+firstName
+SNPediaUrl = "http://www.snpedia.com" #genetic db
+spornyFileLocal = "sporny.txt"  #https://github.com/msporny/dna
+
+duckUrl = "http://api.duckduckgo.com/?format=json&q=" + firstName
 #lastName = raw_input("What is the surname that you want to search for ? >> ")
 lastName = "mcbrien"
 #Sources Config, we scientists must work together 
@@ -50,11 +56,28 @@ site = urllib.urlopen(duckUrl)
 data = site.read()
 parsed = BeautifulSoup(data)
 
-first_link = parsed.findAll('div', {'class': re.compile('links_main*')})[0].a['href']
+#first_link = parsed.findAll('div', {'class': re.compile('links_main*')})[0].a['href']
        
-print first_link
+rsids = [x[0] for x in csv.reader(open(spornyFileLocal,'r'),delimiter='\t')]
+chromosomes  = [x[1] for x in csv.reader(open(spornyFileLocal,'r'),delimiter='\t')]
+positions = [x[2] for x in csv.reader(open(spornyFileLocal,'r'),delimiter='\t')]
+genotypes = [x[3] for x in csv.reader(open(spornyFileLocal,'r'),delimiter='\t')]
+
+print rsids[0]
+
+for rsid in rsids:
+    url = "https://api.23andme.com/3/marker/" + rsid
+    print url
+    response = urllib2.urlopen(url)
+    data = response.read()
+    values = json.loads(data)    
+    print ', '.join(values)
 
 
+#with open("sporny.txt") as geneRecord: 
+#    LoL=[x.strip().split('\t') for x in geneRecord]
+#    print LoL[0]
+#    print zip(*(line.strip().split('\t') for line in geneRecord))
 
 ##query = urllib.urlencode( {'q' : queryPrefix + " " + firstName + " " + querySuffix } )
 
